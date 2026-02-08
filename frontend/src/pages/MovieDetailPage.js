@@ -245,6 +245,16 @@ export const MovieDetailPage = () => {
           </div>
         </motion.div>
       )}
+
+      {/* KinoBD Player Modal */}
+      {showPlayer && (
+        <KinoBDPlayer
+          kinopoiskId={details.external_ids?.imdb_id ? null : details.external_ids?.imdb_id}
+          imdbId={details.external_ids?.imdb_id}
+          title={details.title || details.name}
+          onClose={() => setShowPlayer(false)}
+        />
+      )}
     </div>
   );
 };
