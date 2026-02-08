@@ -118,15 +118,25 @@ export const MovieDetailPage = () => {
               ))}
             </div>
 
-            <div className="flex items-center space-x-4 pt-4">
+            <div className="flex items-center flex-wrap gap-4 pt-4">
+              {/* Кнопка смотреть онлайн */}
+              <button
+                onClick={() => setShowPlayer(true)}
+                className="bg-brand-primary hover:bg-brand-hover text-white rounded-md px-8 py-3 font-bold transition-transform hover:scale-105 active:scale-95 shadow-[0_0_20px_rgba(255,59,48,0.3)] flex items-center space-x-2"
+                data-testid="watch-online-button"
+              >
+                <Tv className="w-5 h-5" />
+                <span>Смотреть онлайн</span>
+              </button>
+
               {trailerUrl && (
                 <button
                   onClick={() => setShowTrailer(true)}
-                  className="bg-brand-primary hover:bg-brand-hover text-white rounded-md px-8 py-3 font-bold transition-transform hover:scale-105 active:scale-95 shadow-[0_0_20px_rgba(255,59,48,0.3)] flex items-center space-x-2"
+                  className="bg-white/10 hover:bg-white/20 backdrop-blur-md text-white rounded-md px-6 py-3 font-medium transition-colors border border-white/10 flex items-center space-x-2"
                   data-testid="play-trailer-button"
                 >
                   <Play className="w-5 h-5 fill-current" />
-                  <span>Смотреть трейлер</span>
+                  <span>Трейлер</span>
                 </button>
               )}
 
