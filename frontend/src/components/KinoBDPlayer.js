@@ -1,40 +1,80 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { X, Play, Loader2 } from 'lucide-react';
+import { X, Play, Loader2, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { getKinopoiskIdFromIMDB, searchKinoBD } from '../services/kinobd';
 
-export const KinoBDPlayer = ({ kinopoiskId, imdbId, title, onClose }) => {
+export const KinoBDPlayer = ({ kinopoiskId: initialKinopoiskId, imdbId, title, year, onClose }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [kinopoiskId, setKinopoiskId] = useState(initialKinopoiskId);
+  const [statusMessage, setStatusMessage] = useState('Загрузка плеера...');
   const playerRef = useRef(null);
 
   useEffect(() => {
-    // Проверяем есть ли Kinopoisk ID
-    if (!kinopoiskId && !imdbId) {
+    const fetchKinopoiskId = async () => {
+      // Если уже есть Kinopoisk ID - используем его
+      if (initialKinopoiskId) {
+        setKinopoiskId(initialKinopoiskId);
+        loadPlayer();
+        return;
+      }
+
+      // Пытаемся получить Kinopoisk ID через IMDB
+      if (imdbId) {
+        setStatusMessage('Поиск источников для просмотра...');
+        const kpId = await getKinopoiskIdFromIMDB(imdbId);
+        if (kpId) {
+          setKinopoiskId(kpId);
+          loadPlayer();
+          return;
+        }
+      }
+
+      // Пытаемся найти по названию и году
+      if (title) {
+        setStatusMessage('Поиск фильма...');
+        const kpId = await searchKinoBD(title, year);
+        if (kpId) {
+          setKinopoiskId(kpId);
+          loadPlayer();
+          return;
+        }
+      }
+
+      // Если ничего не нашли
       setError(true);
       setLoading(false);
-      return;
-    }
+      setStatusMessage('Источники не найдены');
+    };
 
-    // Загружаем скрипт KinoBD если его еще нет
-    const scriptId = 'kinobd-player-script';
-    let script = document.getElementById(scriptId);
-    
-    if (!script) {
-      script = document.createElement('script');
-      script.id = scriptId;
-      script.src = 'https://kinobd.net/js/player_.js';
-      script.async = true;
-      script.onload = () => {
-        setLoading(false);
-      };
-      script.onerror = () => {
-        setError(true);
-        setLoading(false);
-      };
-      document.body.appendChild(script);
-    } else {
-      setLoading(false);
-    }
+    const loadPlayer = () => {
+      // Загружаем скрипт KinoBD если его еще нет
+      const scriptId = 'kinobd-player-script';
+      let script = document.getElementById(scriptId);
+      
+      if (!script) {
+        script = document.createElement('script');
+        script.id = scriptId;
+        script.src = 'https://kinobd.net/js/player_.js';
+        script.async = true;
+        script.onload = () => {
+          setLoading(false);
+        };
+        script.onerror = () => {
+          setError(true);
+          setLoading(false);
+          setStatusMessage('Ошибка загрузки плеера');
+        };
+        document.body.appendChild(script);
+      } else {
+        // Если скрипт уже загружен, просто инициализируем плеер
+        setTimeout(() => {
+          setLoading(false);
+        }, 500);
+      }
+    };
+
+    fetchKinopoiskId();
 
     return () => {
       // Очистка при размонтировании
@@ -42,7 +82,7 @@ export const KinoBDPlayer = ({ kinopoiskId, imdbId, title, onClose }) => {
         playerRef.current.innerHTML = '';
       }
     };
-  }, [kinopoiskId, imdbId]);
+  }, [initialKinopoiskId, imdbId, title, year]);
 
   const handleBackdropClick = (e) => {
     if (e.target === e.currentTarget) {
