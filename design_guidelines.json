@@ -1,0 +1,152 @@
+{
+  "project_name": "StreamX - Cinematic Discovery Platform",
+  "design_philosophy": {
+    "persona": "E1: The Anti-AI Designer",
+    "core_concept": "Cinematic Immersion",
+    "principles": [
+      "Fusion over Imitation: Mix Netflix utility with Awwwards-level aesthetics.",
+      "Emotion First: Every interaction feels 'heavy' and premium.",
+      "Content is King: The UI recedes; the artwork dominates.",
+      "Negative Space: Use deep black voids to frame colorful content."
+    ],
+    "anti_patterns": [
+      "No generic 20% gradients.",
+      "No 'Inter' font for headings.",
+      "No boring equal-height grids everywhere (Use 'Tetris' grid).",
+      "No default 'blue' links or buttons."
+    ]
+  },
+  "typography": {
+    "headings": {
+      "font_family": "Manrope, sans-serif",
+      "weights": ["600", "700", "800"],
+      "usage": "Hero titles, Section headers, Movie titles",
+      "install_url": "https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap"
+    },
+    "body": {
+      "font_family": "DM Sans, sans-serif",
+      "weights": ["400", "500"],
+      "usage": "Descriptions, Metadata, UI elements",
+      "install_url": "https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,100..1000&display=swap"
+    },
+    "rules": {
+      "h1": "text-5xl md:text-7xl font-extrabold tracking-tight leading-[0.9]",
+      "h2": "text-3xl md:text-4xl font-bold tracking-tighter",
+      "h3": "text-xl md:text-2xl font-semibold tracking-tight",
+      "body": "text-base md:text-lg leading-relaxed text-muted-foreground"
+    }
+  },
+  "colors": {
+    "theme_strategy": "Cinematic Dark (Default) with Editorial Light toggle",
+    "palette": {
+      "primary": {
+        "name": "Electric Blaze",
+        "hex": "#FF3B30",
+        "tailwind": "bg-[#FF3B30] text-white"
+      },
+      "background": {
+        "dark": "#050505",
+        "light": "#F5F5F0",
+        "dark_surface": "#121212",
+        "light_surface": "#FFFFFF"
+      },
+      "text": {
+        "dark_primary": "#FFFFFF",
+        "dark_secondary": "#A1A1AA",
+        "light_primary": "#18181B",
+        "light_secondary": "#52525B"
+      },
+      "functional": {
+        "success": "#10B981",
+        "warning": "#F59E0B",
+        "error": "#EF4444"
+      }
+    },
+    "gradients": {
+      "hero_overlay": "bg-gradient-to-t from-[#050505] via-[#050505]/60 to-transparent",
+      "brand_glow": "bg-gradient-to-r from-[#FF3B30]/20 to-transparent blur-3xl"
+    }
+  },
+  "layout_strategies": {
+    "spacing_scale": "p-4, p-6, p-8, p-12, p-16, p-24, p-32",
+    "container": "max-w-[1600px] mx-auto px-4 md:px-8",
+    "grid_systems": {
+      "trending_tetris": {
+        "description": "Asymmetric grid for 'Trending Now'. Mix sizes.",
+        "classes": "grid grid-cols-1 md:grid-cols-8 gap-4 auto-rows-[200px]"
+      },
+      "standard_catalog": {
+        "description": "Clean grid for search results.",
+        "classes": "grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-6"
+      }
+    },
+    "z_index": {
+      "navbar": "z-50",
+      "hero_content": "z-40",
+      "modal": "z-[60]"
+    }
+  },
+  "ui_components": {
+    "buttons": {
+      "primary": "bg-[#FF3B30] hover:bg-[#D93025] text-white rounded-md px-8 py-3 font-bold transition-transform hover:scale-105 active:scale-95 shadow-[0_0_20px_rgba(255,59,48,0.3)]",
+      "secondary": "bg-white/10 hover:bg-white/20 backdrop-blur-md text-white rounded-md px-6 py-3 font-medium transition-colors border border-white/10"
+    },
+    "cards": {
+      "movie_poster": {
+        "ratio": "aspect-[2/3]",
+        "style": "relative rounded-lg overflow-hidden group cursor-pointer transition-all duration-300 hover:z-10 hover:scale-105 hover:shadow-2xl hover:shadow-black/50 border border-white/5",
+        "hover_content": "absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4"
+      }
+    },
+    "inputs": {
+      "search": "bg-black/50 border border-white/10 focus:border-[#FF3B30] rounded-full px-6 py-3 w-full transition-all text-white placeholder:text-white/40 backdrop-blur-sm"
+    },
+    "navigation": {
+      "navbar": "fixed top-0 left-0 right-0 h-20 flex items-center justify-between px-8 bg-gradient-to-b from-black/80 to-transparent z-50 transition-colors data-[scrolled=true]:bg-black/95 data-[scrolled=true]:backdrop-blur-md"
+    }
+  },
+  "assets": {
+    "images": {
+      "auth_background": "https://images.unsplash.com/photo-1759230766134-e3ff1c27d20e?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "fallback_poster": "https://via.placeholder.com/500x750/1a1a1a/ffffff?text=No+Poster",
+      "logo_placeholder": "Use text 'STREAMX' in Bebas Neue or Manrope ExtraBold"
+    },
+    "icons": {
+      "library": "lucide-react",
+      "set": ["Play", "Info", "Plus", "Search", "Bell", "User", "X", "Menu", "ChevronRight", "ChevronLeft", "LogOut", "Moon", "Sun"]
+    }
+  },
+  "tech_stack_instructions": {
+    "framework": "React 19 (via react-scripts or Vite)",
+    "styling": "Tailwind CSS + Shadcn UI (customized)",
+    "routing": "react-router-dom (Use HashRouter for GitHub Pages compatibility)",
+    "state_management": "React Context + localStorage (for Auth/Watchlist)",
+    "data_fetching": "Axios + TMDB API",
+    "animation": "framer-motion + tailwindcss-animate",
+    "video_player": "react-player",
+    "smooth_scroll": "lenis"
+  },
+  "implementation_steps": {
+    "step_1": "Setup Global Styles (Fonts, Colors in index.css). Install dependencies: `yarn add react-player framer-motion @studio-freight/lenis axios`.",
+    "step_2": "Create 'AuthContext' to simulate login/signup and persist to localStorage.",
+    "step_3": "Build 'TMDB Service' (api.js) to fetch Trending, Top Rated, Search, Details.",
+    "step_4": "Develop Core Components: Navbar (transparent to solid), Hero (Parallax), MovieCard (Hover effects).",
+    "step_5": "Build Pages: Home (Rows), Search (Grid), Details (Modal/Page with Player).",
+    "step_6": "Deploy strategy: Ensure `package.json` has `homepage` field set to GitHub Pages URL."
+  },
+  "tmdb_config": {
+    "base_url": "https://api.themoviedb.org/3",
+    "image_base_url": "https://image.tmdb.org/t/p/original",
+    "poster_size": "w500",
+    "backdrop_size": "original",
+    "note": "Use 'api_key' as query param. Handle 404s gracefully."
+  },
+  "universal_guidelines": [
+    "Dark colors look good when used independently without gradients. DO NOT use dark colors as gradients.",
+    "Don't make generic centered layouts, simplistic gradients, and uniform styling.",
+    "Create depth through layered design elements with z-index hierarchy.",
+    "Use glass-morphism effects with backdrop filters (12-24px blur).",
+    "Every interaction needs micro-animations.",
+    "Use 2-3x more spacing than feels comfortable."
+  ]
+}
