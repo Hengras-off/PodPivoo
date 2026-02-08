@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Play, Plus, Check, X, ChevronLeft } from 'lucide-react';
-import ReactPlayer from 'react-player/youtube';
+import ReactPlayer from 'react-player';
 import { getMovieDetails, getTVDetails, getImageUrl, getTrailerUrl } from '../services/tmdb';
 import { useWatchlist } from '../contexts/WatchlistContext';
 import { LoadingSpinner, ErrorMessage } from '../components/LoadingSpinner';
