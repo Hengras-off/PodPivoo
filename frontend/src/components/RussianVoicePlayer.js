@@ -199,14 +199,48 @@ export const RussianVoicePlayer = ({ tmdbId, imdbId, title, year, mediaType, onC
     }
   ];
 
-  // Фильтруем доступные
+  // Фильтруем доступные источники
   const availableSources = sources.filter(source => {
     try {
+      // Если источник требует KP ID и его нет - пропускаем пока идет поиск
+      if (source.requiresKpId && !kinopoiskId && searchingKp) {
+        return true; // Показываем, но с загрузкой
+      }
+      if (source.requiresKpId && !kinopoiskId && !searchingKp) {
+        return false; // KP ID не найден - скрываем
+      }
       return source.getUrl() !== null;
     } catch {
       return false;
     }
   });
+
+  // Если все еще ищем KP ID - показываем загрузку
+  if (searchingKp) {
+    return (
+      <AnimatePresence>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={onClose}
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 backdrop-blur-sm p-4"
+        >
+          <div className="bg-card border border-border rounded-lg p-8 max-w-md text-center space-y-4">
+            <Search className="w-16 h-16 mx-auto text-brand-primary animate-pulse" />
+            <h3 className="text-xl font-bold">Поиск источников...</h3>
+            <p className="text-muted-foreground">
+              Ищем фильм в базе русских озвучек
+            </p>
+            <div className="flex items-center justify-center gap-2">
+              <Loader2 className="w-5 h-5 animate-spin" />
+              <span className="text-sm">Поиск Kinopoisk ID...</span>
+            </div>
+          </div>
+        </motion.div>
+      </AnimatePresence>
+    );
+  }
 
   if (availableSources.length === 0) {
     return (
@@ -224,6 +258,11 @@ export const RussianVoicePlayer = ({ tmdbId, imdbId, title, year, mediaType, onC
             <p className="text-muted-foreground">
               Для этого фильма не найдены источники с русской озвучкой
             </p>
+            <div className="text-xs text-muted-foreground bg-muted/20 p-3 rounded">
+              <p>TMDB: {tmdbId}</p>
+              {imdbId && <p>IMDB: {imdbId}</p>}
+              {kinopoiskId && <p>Kinopoisk: {kinopoiskId}</p>}
+            </div>
             <button
               onClick={onClose}
               className="px-6 py-2 bg-brand-primary hover:bg-brand-hover rounded-md"
@@ -237,7 +276,7 @@ export const RussianVoicePlayer = ({ tmdbId, imdbId, title, year, mediaType, onC
   }
 
   const currentSource = availableSources[selectedSource];
-  const embedUrl = currentSource.getUrl();
+  const embedUrl = currentSource?.getUrl();
 
   return (
     <AnimatePresence>
