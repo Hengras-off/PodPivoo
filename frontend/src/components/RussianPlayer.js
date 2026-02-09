@@ -20,85 +20,86 @@ export const RussianPlayer = ({ imdbId, tmdbId, kinopoiskId, title, year, mediaT
     title
   });
 
-  // Список русских источников
+  // Список проверенных рабочих источников
+  // Используем плееры которые работают с TMDB ID для точности
   const sources = [
     {
-      name: 'Kodik',
+      name: 'VidSrc Pro',
       getUrl: () => {
-        // Kodik работает лучше с IMDB
-        if (imdbId) {
-          return `https://kodik.info/find-player?imdb_id=${imdbId}`;
-        } else if (kinopoiskId) {
-          return `https://kodik.info/find-player?kinopoisk_id=${kinopoiskId}`;
-        } else if (tmdbId) {
-          // Для TMDB используем другой формат
-          const type = mediaType === 'tv' ? 'serial' : 'video';
-          return `https://kodik.info/find-player?tmdb_id=${tmdbId}&type=${type}`;
+        if (tmdbId) {
+          return `https://vidsrc.pro/embed/${mediaType}/${tmdbId}`;
         }
         return null;
       },
-      description: 'Русская озвучка, субтитры, HD качество',
-      icon: '🇷🇺',
-      quality: 'HD/Full HD'
-    },
-    {
-      name: 'HDVB',
-      getUrl: () => {
-        // HDVB требует правильный тип контента
-        if (imdbId) {
-          const type = mediaType === 'tv' ? 'serial' : 'movie';
-          return `https://hdvb.tv/embed/${type}/${imdbId}`;
-        } else if (kinopoiskId) {
-          const type = mediaType === 'tv' ? 'serial' : 'movie';
-          return `https://hdvb.tv/embed/${type}/${kinopoiskId}`;
-        }
-        return null;
-      },
-      description: 'Множество озвучек, быстрая загрузка',
+      description: 'Русская озвучка, работает с TMDB напрямую',
       icon: '🎬',
       quality: 'HD/Full HD'
     },
     {
-      name: 'Bazon',
+      name: 'VidSrc.in',
       getUrl: () => {
-        if (kinopoiskId) {
-          return `https://bazon.cc/embed/${kinopoiskId}`;
-        } else if (imdbId) {
-          // Bazon использует IMDB с префиксом tt
-          return `https://bazon.cc/embed/${imdbId}`;
+        if (tmdbId) {
+          return `https://vidsrc.in/embed/${mediaType}/${tmdbId}`;
         }
         return null;
       },
-      description: 'Русская озвучка, популярные фильмы',
+      description: 'Множество озвучек, субтитры',
+      icon: '🇷🇺',
+      quality: 'HD'
+    },
+    {
+      name: 'VidSrc.cc',
+      getUrl: () => {
+        if (tmdbId) {
+          return `https://vidsrc.cc/v2/embed/${mediaType}/${tmdbId}`;
+        }
+        return null;
+      },
+      description: 'Быстрая загрузка, русские субтитры',
+      icon: '⚡',
+      quality: 'HD/Full HD'
+    },
+    {
+      name: 'Embed.su',
+      getUrl: () => {
+        if (tmdbId) {
+          const type = mediaType === 'tv' ? 'tv' : 'movie';
+          return `https://embed.su/embed/${type}/${tmdbId}`;
+        }
+        return null;
+      },
+      description: 'Стабильный источник с озвучкой',
+      icon: '📺',
+      quality: 'HD'
+    },
+    {
+      name: 'VidSrc.net',
+      getUrl: () => {
+        if (tmdbId) {
+          return `https://vidsrc.net/embed/${mediaType}/${tmdbId}`;
+        } else if (imdbId) {
+          return `https://vidsrc.net/embed/${mediaType}/${imdbId}`;
+        }
+        return null;
+      },
+      description: 'Альтернативная озвучка',
       icon: '🎥',
       quality: 'HD'
     },
     {
-      name: 'Collaps',
+      name: 'Kodik (TMDB)',
       getUrl: () => {
-        if (imdbId) {
-          // Collaps лучше работает с IMDB
-          return `https://api.delivembd.ws/embed/${imdbId}`;
-        } else if (kinopoiskId) {
-          return `https://api.delivembd.ws/embed/kp/${kinopoiskId}`;
+        if (tmdbId) {
+          return `https://kodik.info/search?title=${encodeURIComponent(title)}&year=${year}`;
+        } else if (imdbId) {
+          return `https://kodik.info/find-player?imdb_id=${imdbId}`;
         }
         return null;
       },
-      description: 'Стабильная работа, много озвучек',
-      icon: '📺',
+      description: 'Поиск по названию для точности',
+      icon: '🔍',
       quality: 'HD/Full HD'
-    },
-    {
-      name: 'VideoCDN',
-      getUrl: () => {
-        if (imdbId) {
-          // VideoCDN использует IMDB ID
-          return `https://videocdn.tv/embed/${imdbId}`;
-        } else if (kinopoiskId) {
-          return `https://videocdn.tv/embed/${kinopoiskId}`;
-        }
-        return null;
-      },
+    }
       description: 'CDN сеть, высокая скорость',
       icon: '⚡',
       quality: 'HD'
