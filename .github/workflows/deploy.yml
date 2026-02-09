@@ -1,31 +1,37 @@
-name: Deploy to GitHub Pages
+name: Build and Deploy Frontend
 
 on:
   push:
-    branches: [ main, master ]
+    branches:
+      - main
+      - master
   workflow_dispatch:
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
-    
+
     steps:
+      # 1️⃣ Клонируем репозиторий
       - name: Checkout repository
         uses: actions/checkout@v3
-      
+
+      # 2️⃣ Устанавливаем Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '20'
           cache: 'yarn'
           cache-dependency-path: frontend/yarn.lock
-          
+
+      # 3️⃣ Устанавливаем зависимости
       - name: Install dependencies
         run: |
           cd frontend
           yarn install --frozen-lockfile
-          
-      - name: Build application
+
+      # 4️⃣ Собираем фронтенд
+      - name: Build frontend
         env:
           REACT_APP_TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
           REACT_APP_TMDB_BASE_URL: https://api.themoviedb.org/3
@@ -33,10 +39,11 @@ jobs:
         run: |
           cd frontend
           yarn build
-          
+
+      # 5️⃣ Деплой на GitHub Pages
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./frontend/build
-          cname: # Опционально: ваш кастомный домен
+          # cname: example.com  # Если есть кастомный домен
