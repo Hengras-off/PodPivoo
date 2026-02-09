@@ -16,10 +16,15 @@ export const RussianPlayer = ({ imdbId, tmdbId, kinopoiskId, title, year, mediaT
     {
       name: 'Kodik',
       getUrl: () => {
+        // Kodik работает лучше с IMDB
         if (imdbId) {
           return `https://kodik.info/find-player?imdb_id=${imdbId}`;
         } else if (kinopoiskId) {
           return `https://kodik.info/find-player?kinopoisk_id=${kinopoiskId}`;
+        } else if (tmdbId) {
+          // Для TMDB используем другой формат
+          const type = mediaType === 'tv' ? 'serial' : 'video';
+          return `https://kodik.info/find-player?tmdb_id=${tmdbId}&type=${type}`;
         }
         return null;
       },
@@ -30,10 +35,13 @@ export const RussianPlayer = ({ imdbId, tmdbId, kinopoiskId, title, year, mediaT
     {
       name: 'HDVB',
       getUrl: () => {
-        if (kinopoiskId) {
-          return `https://hdvb.tv/embed/kinopoisk/${kinopoiskId}`;
-        } else if (imdbId) {
-          return `https://hdvb.tv/embed/imdb/${imdbId}`;
+        // HDVB требует правильный тип контента
+        if (imdbId) {
+          const type = mediaType === 'tv' ? 'serial' : 'movie';
+          return `https://hdvb.tv/embed/${type}/${imdbId}`;
+        } else if (kinopoiskId) {
+          const type = mediaType === 'tv' ? 'serial' : 'movie';
+          return `https://hdvb.tv/embed/${type}/${kinopoiskId}`;
         }
         return null;
       },
@@ -47,8 +55,8 @@ export const RussianPlayer = ({ imdbId, tmdbId, kinopoiskId, title, year, mediaT
         if (kinopoiskId) {
           return `https://bazon.cc/embed/${kinopoiskId}`;
         } else if (imdbId) {
-          const imdbNumeric = imdbId.replace('tt', '');
-          return `https://bazon.cc/embed/imdb/${imdbNumeric}`;
+          // Bazon использует IMDB с префиксом tt
+          return `https://bazon.cc/embed/${imdbId}`;
         }
         return null;
       },
@@ -59,10 +67,11 @@ export const RussianPlayer = ({ imdbId, tmdbId, kinopoiskId, title, year, mediaT
     {
       name: 'Collaps',
       getUrl: () => {
-        if (kinopoiskId) {
+        if (imdbId) {
+          // Collaps лучше работает с IMDB
+          return `https://api.delivembd.ws/embed/${imdbId}`;
+        } else if (kinopoiskId) {
           return `https://api.delivembd.ws/embed/kp/${kinopoiskId}`;
-        } else if (imdbId) {
-          return `https://api.delivembd.ws/embed/imdb/${imdbId}`;
         }
         return null;
       },
@@ -73,11 +82,14 @@ export const RussianPlayer = ({ imdbId, tmdbId, kinopoiskId, title, year, mediaT
     {
       name: 'VideoCDN',
       getUrl: () => {
-        if (kinopoiskId) {
-          return `https://videocdn.tv/embed/${kinopoiskId}`;
-        } else if (imdbId) {
+        if (imdbId) {
+          // VideoCDN использует IMDB ID
           return `https://videocdn.tv/embed/${imdbId}`;
+        } else if (kinopoiskId) {
+          return `https://videocdn.tv/embed/${kinopoiskId}`;
         }
+        return null;
+      },
         return null;
       },
       description: 'CDN сеть, высокая скорость',
