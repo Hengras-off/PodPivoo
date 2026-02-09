@@ -44,6 +44,6 @@ jobs:
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          personal_token: ${{ secrets.GH_PAT }}   # <-- здесь используется твой PAT
           publish_dir: ./frontend/build
-          # cname: example.com  # Если есть кастомный домен
+          # cname: example.com  # если есть кастомный домен, раскомментируй и впиши
