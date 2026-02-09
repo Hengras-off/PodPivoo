@@ -108,25 +108,45 @@ export const RussianVoicePlayer = ({ tmdbId, imdbId, title, year, mediaType, onC
     findKinopoiskId();
   }, [findKinopoiskId]);
 
-  // Collaps - единственный источник с русской озвучкой
-  const source = {
-    name: 'Collaps',
-    getUrl: () => {
-      if (kinopoiskId) {
-        return `//api.delivembd.ws/embed/kp/${kinopoiskId}`;
-      }
-      if (imdbId) {
-        return `//api.delivembd.ws/embed/imdb/${imdbId}`;
-      }
-      return null;
-    },
-    description: 'Множество озвучек',
-    icon: '🎬',
-    quality: 'HD/Full HD',
-    voiceovers: 'Русская озвучка'
-  };
+  const [selectedSource, setSelectedSource] = useState(0);
 
-  const embedUrl = source.getUrl();
+  // Источники с русской озвучкой
+  const sources = [
+    {
+      name: 'Collaps',
+      getUrl: () => {
+        if (kinopoiskId) {
+          return `//api.delivembd.ws/embed/kp/${kinopoiskId}`;
+        }
+        if (imdbId) {
+          return `//api.delivembd.ws/embed/imdb/${imdbId}`;
+        }
+        return null;
+      },
+      description: 'Русская озвучка (РФ)',
+      icon: '🎬',
+      quality: 'HD/Full HD',
+      voiceovers: 'Русская озвучка'
+    },
+    {
+      name: 'VidSrc',
+      getUrl: () => {
+        if (tmdbId) {
+          const type = mediaType === 'movie' ? 'movie' : 'tv';
+          return `https://vidsrc.cc/v2/embed/${type}/${tmdbId}`;
+        }
+        return null;
+      },
+      description: 'Без гео-блокировки',
+      icon: '🌍',
+      quality: 'HD/Full HD',
+      voiceovers: 'Субтитры'
+    }
+  ];
+
+  const availableSources = sources.filter(s => s.getUrl() !== null);
+  const currentSource = availableSources[selectedSource] || availableSources[0];
+  const embedUrl = currentSource?.getUrl();
 
   // Если все еще ищем KP ID и нет IMDB ID - показываем загрузку
   if (searchingKp && !imdbId) {
