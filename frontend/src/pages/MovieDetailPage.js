@@ -246,13 +246,14 @@ export const MovieDetailPage = () => {
         </motion.div>
       )}
 
-      {/* KinoBD Player Modal */}
+      {/* Multi-Source Player Modal */}
       {showPlayer && (
-        <KinoBDPlayer
-          kinopoiskId={null}
+        <MultiSourcePlayer
           imdbId={details.external_ids?.imdb_id}
+          tmdbId={id}
           title={details.title || details.name}
           year={new Date(details.release_date || details.first_air_date).getFullYear()}
+          mediaType={mediaType}
           onClose={() => setShowPlayer(false)}
         />
       )}
