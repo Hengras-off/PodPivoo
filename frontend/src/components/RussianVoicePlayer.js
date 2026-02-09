@@ -123,10 +123,12 @@ export const RussianVoicePlayer = ({ tmdbId, imdbId, title, year, mediaType, onC
     {
       name: 'Kodik',
       getUrl: () => {
+        // Приоритет: IMDB ID (более надежный), затем Kinopoisk ID
+        if (imdbId) {
+          return `//kodik.info/find-player?imdbId=${imdbId}&only_translations=&strict=true`;
+        }
         if (kinopoiskId) {
-          // Добавляем type для фильтрации фильм/сериал
-          const contentType = mediaType === 'movie' ? 'movie' : 'serial';
-          return `//kodik.info/find-player?kinopoiskId=${kinopoiskId}&only_translations=&strict=true&type=${contentType}`;
+          return `//kodik.info/find-player?kinopoiskId=${kinopoiskId}&only_translations=&strict=true`;
         }
         return null;
       },
@@ -134,7 +136,7 @@ export const RussianVoicePlayer = ({ tmdbId, imdbId, title, year, mediaType, onC
       icon: '🎬',
       quality: 'HD/Full HD',
       voiceovers: 'Профессиональная озвучка',
-      requiresKpId: true
+      requiresKpId: false  // Теперь может работать и без KP ID
     },
     // Collaps - популярный русский агрегатор
     {
