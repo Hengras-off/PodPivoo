@@ -10,18 +10,16 @@ export const RussianVoicePlayer = ({ tmdbId, imdbId, title, year, mediaType, onC
   const [loading, setLoading] = useState(true);
   const [kinopoiskId, setKinopoiskId] = useState(null);
   const [searchingKp, setSearchingKp] = useState(true);
+  const [selectedSource, setSelectedSource] = useState(0);
 
-  // Логируем входные данные для отладки
   useEffect(() => {
     console.log(`RussianVoicePlayer: tmdbId=${tmdbId}, imdbId=${imdbId}, title="${title}", year=${year}, mediaType=${mediaType}`);
   }, [tmdbId, imdbId, title, year, mediaType]);
 
-  // Поиск Kinopoisk ID через различные методы
   const findKinopoiskId = useCallback(async () => {
     setSearchingKp(true);
-    
+
     try {
-      // Метод 1: Поиск через Kinopoisk Unofficial API по IMDB ID
       if (imdbId) {
         try {
           const response = await axios.get(
@@ -42,7 +40,6 @@ export const RussianVoicePlayer = ({ tmdbId, imdbId, title, year, mediaType, onC
         }
       }
 
-      // Метод 2: Поиск по названию и году с учетом типа контента
       try {
         const searchTitle = title.replace(/[^\w\sа-яА-Я]/g, '').trim();
         const response = await axios.get(
@@ -53,35 +50,19 @@ export const RussianVoicePlayer = ({ tmdbId, imdbId, title, year, mediaType, onC
             timeout: 5000
           }
         );
-        
+
         if (response.data?.films?.length > 0) {
           const films = response.data.films;
-          
-          // Фильтруем по типу: для movie ищем только фильмы, для tv - сериалы
-          const typeFilter = mediaType === 'movie' 
+
+          const typeFilter = mediaType === 'movie'
             ? f => f.type === 'FILM' || !f.type
             : f => f.type === 'TV_SERIES' || f.type === 'TV_SHOW' || f.type === 'MINI_SERIES';
-          
-          // Приоритет: точное совпадение по году + типу
-          let match = films.find(f => 
-            (f.year === year || f.year === String(year)) && typeFilter(f)
-          );
-          
-          // Если не нашли, ищем только по типу
-          if (!match) {
-            match = films.find(typeFilter);
-          }
-          
-          // Если все еще не нашли, берем первое совпадение по году
-          if (!match) {
-            match = films.find(f => f.year === year || f.year === String(year));
-          }
-          
-          // Последняя попытка - первый результат
-          if (!match) {
-            match = films[0];
-          }
-          
+
+          let match = films.find(f => (f.year === year || f.year === String(year)) && typeFilter(f));
+          if (!match) match = films.find(typeFilter);
+          if (!match) match = films.find(f => f.year === year || f.year === String(year));
+          if (!match) match = films[0];
+
           if (match?.filmId) {
             const kpId = match.filmId.toString();
             console.log(`Found KP ID ${kpId} for "${title}" (${year}) - type: ${match.type}`);
@@ -101,28 +82,16 @@ export const RussianVoicePlayer = ({ tmdbId, imdbId, title, year, mediaType, onC
       setSearchingKp(false);
       return null;
     }
-  }, [imdbId, title, year]);
+  }, [imdbId, title, year, mediaType]);
 
-  // При монтировании ищем Kinopoisk ID
   useEffect(() => {
     findKinopoiskId();
   }, [findKinopoiskId]);
 
-  const [selectedSource, setSelectedSource] = useState(0);
-
-  // Источники с русской озвучкой
   const sources = [
     {
       name: 'Collaps',
-      getUrl: () => {
-        if (kinopoiskId) {
-          return `//api.delivembd.ws/embed/kp/${kinopoiskId}`;
-        }
-        if (imdbId) {
-          return `//api.delivembd.ws/embed/imdb/${imdbId}`;
-        }
-        return null;
-      },
+      getUrl: () => kinopoiskId ? `//api.delivembd.ws/embed/kp/${kinopoiskId}` : imdbId ? `//api.delivembd.ws/embed/imdb/${imdbId}` : null,
       description: 'Русская озвучка (РФ)',
       icon: '🎬',
       quality: 'HD/Full HD',
@@ -130,13 +99,7 @@ export const RussianVoicePlayer = ({ tmdbId, imdbId, title, year, mediaType, onC
     },
     {
       name: 'VidSrc',
-      getUrl: () => {
-        if (tmdbId) {
-          const type = mediaType === 'movie' ? 'movie' : 'tv';
-          return `https://vidsrc.xyz/embed/${type}/${tmdbId}`;
-        }
-        return null;
-      },
+      getUrl: () => tmdbId ? `https://vidsrc.xyz/embed/${mediaType === 'movie' ? 'movie' : 'tv'}/${tmdbId}` : null,
       description: 'Без гео-блокировки',
       icon: '🌍',
       quality: 'HD/Full HD',
@@ -148,7 +111,6 @@ export const RussianVoicePlayer = ({ tmdbId, imdbId, title, year, mediaType, onC
   const currentSource = availableSources[selectedSource] || availableSources[0];
   const embedUrl = currentSource?.getUrl();
 
-  // Если все еще ищем KP ID и нет IMDB ID - показываем загрузку
   if (searchingKp && !imdbId) {
     return (
       <AnimatePresence>
@@ -162,9 +124,7 @@ export const RussianVoicePlayer = ({ tmdbId, imdbId, title, year, mediaType, onC
           <div className="bg-card border border-border rounded-lg p-8 max-w-md text-center space-y-4">
             <Search className="w-16 h-16 mx-auto text-brand-primary animate-pulse" />
             <h3 className="text-xl font-bold">Поиск источников...</h3>
-            <p className="text-muted-foreground">
-              Ищем фильм в базе русских озвучек
-            </p>
+            <p className="text-muted-foreground">Ищем фильм в базе русских озвучек</p>
             <div className="flex items-center justify-center gap-2">
               <Loader2 className="w-5 h-5 animate-spin" />
               <span className="text-sm">Поиск Kinopoisk ID...</span>
@@ -188,9 +148,7 @@ export const RussianVoicePlayer = ({ tmdbId, imdbId, title, year, mediaType, onC
           <div className="bg-card border border-border rounded-lg p-8 max-w-md text-center space-y-4">
             <AlertCircle className="w-16 h-16 mx-auto text-yellow-500" />
             <h3 className="text-xl font-bold">Плеер недоступен</h3>
-            <p className="text-muted-foreground">
-              Для этого фильма не найдены источники с русской озвучкой
-            </p>
+            <p className="text-muted-foreground">Для этого фильма не найдены источники с русской озвучкой</p>
             <div className="text-xs text-muted-foreground bg-muted/20 p-3 rounded">
               <p>TMDB: {tmdbId}</p>
               {imdbId && <p>IMDB: {imdbId}</p>}
@@ -236,9 +194,7 @@ export const RussianVoicePlayer = ({ tmdbId, imdbId, title, year, mediaType, onC
               </div>
               <h2 className="text-2xl md:text-3xl font-bold">{title} ({year})</h2>
               <div className="flex items-center gap-2 text-sm">
-                <span className="text-muted-foreground">
-                  {currentSource?.icon} {currentSource?.name}
-                </span>
+                <span className="text-muted-foreground">{currentSource?.icon} {currentSource?.name}</span>
                 <span className="text-brand-primary">•</span>
                 <span className="text-muted-foreground">{currentSource?.quality}</span>
                 <span className="text-brand-primary">•</span>
@@ -263,10 +219,7 @@ export const RussianVoicePlayer = ({ tmdbId, imdbId, title, year, mediaType, onC
               {availableSources.map((source, index) => (
                 <button
                   key={index}
-                  onClick={() => {
-                    setSelectedSource(index);
-                    setLoading(true);
-                  }}
+                  onClick={() => { setSelectedSource(index); setLoading(true); }}
                   className={`px-4 py-2.5 rounded-lg font-semibold transition-all text-sm ${
                     selectedSource === index
                       ? 'bg-brand-primary text-white shadow-[0_0_20px_rgba(255,59,48,0.4)] scale-105'
@@ -283,7 +236,7 @@ export const RussianVoicePlayer = ({ tmdbId, imdbId, title, year, mediaType, onC
             </div>
           </div>
 
-          {/* Player Container */}
+          {/* Player */}
           <div className="relative bg-black rounded-xl overflow-hidden shadow-2xl" style={{ height: '65vh' }}>
             {loading && (
               <div className="absolute inset-0 flex items-center justify-center bg-black z-10">
@@ -291,9 +244,7 @@ export const RussianVoicePlayer = ({ tmdbId, imdbId, title, year, mediaType, onC
                   <Loader2 className="w-16 h-16 animate-spin text-brand-primary mx-auto" />
                   <div>
                     <p className="text-lg font-semibold">Загрузка...</p>
-                    <p className="text-sm text-muted-foreground mt-2">
-                      {currentSource?.name} • {currentSource?.voiceovers}
-                    </p>
+                    <p className="text-sm text-muted-foreground mt-2">{currentSource?.name} • {currentSource?.voiceovers}</p>
                   </div>
                 </div>
               </div>
@@ -320,9 +271,7 @@ export const RussianVoicePlayer = ({ tmdbId, imdbId, title, year, mediaType, onC
                 <div className="flex items-start gap-3">
                   <Languages className="w-6 h-6 text-green-400 flex-shrink-0 mt-0.5" />
                   <div className="flex-1 space-y-1">
-                    <p className="font-bold text-green-400 text-sm">
-                      Kinopoisk ID: {kinopoiskId}
-                    </p>
+                    <p className="font-bold text-green-400 text-sm">Kinopoisk ID: {kinopoiskId}</p>
                     <p className="text-xs text-muted-foreground">
                       Выбирайте озвучку внутри плеера если доступно несколько вариантов.
                     </p>
@@ -336,12 +285,8 @@ export const RussianVoicePlayer = ({ tmdbId, imdbId, title, year, mediaType, onC
                 <div className="flex items-start gap-3">
                   <Languages className="w-6 h-6 text-blue-400 flex-shrink-0 mt-0.5" />
                   <div className="flex-1 space-y-1">
-                    <p className="font-bold text-blue-400 text-sm">
-                      IMDB ID: {imdbId}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      Используется IMDB ID для поиска озвучки.
-                    </p>
+                    <p className="font-bold text-blue-400 text-sm">IMDB ID: {imdbId}</p>
+                    <p className="text-xs text-muted-foreground">Используется IMDB ID для поиска озвучки.</p>
                   </div>
                 </div>
               </div>
@@ -352,12 +297,8 @@ export const RussianVoicePlayer = ({ tmdbId, imdbId, title, year, mediaType, onC
                 <div className="flex items-start gap-3">
                   <AlertCircle className="w-6 h-6 text-yellow-400 flex-shrink-0 mt-0.5" />
                   <div className="flex-1 space-y-1">
-                    <p className="font-bold text-yellow-400 text-sm">
-                      ID не найден
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      Русская озвучка может быть недоступна.
-                    </p>
+                    <p className="font-bold text-yellow-400 text-sm">ID не найден</p>
+                    <p className="text-xs text-muted-foreground">Русская озвучка может быть недоступна.</p>
                     <button
                       onClick={findKinopoiskId}
                       className="mt-2 flex items-center gap-2 px-3 py-1.5 bg-yellow-500/20 hover:bg-yellow-500/30 rounded text-xs font-medium"
