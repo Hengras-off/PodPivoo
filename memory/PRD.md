@@ -11,7 +11,7 @@ Create a Netflix-like website with:
 - Dark theme similar to Netflix
 
 ## User Requirements
-- **Primary**: Russian voiceover through Kodik player
+- **Primary**: Russian voiceover through Collaps player
 - **Language**: Russian (Русский) for all UI
 - **Deployment**: GitHub Pages compatible (static site)
 
@@ -20,7 +20,7 @@ Create a Netflix-like website with:
 /app/frontend/
 ├── src/
 │   ├── components/
-│   │   ├── RussianVoicePlayer.js   # Multi-source video player
+│   │   ├── RussianVoicePlayer.js   # Collaps + VidSrc player
 │   │   ├── Hero.js                 # Homepage hero section
 │   │   ├── MovieCard.js            # Movie/TV card component
 │   │   ├── Navbar.js               # Navigation
@@ -42,13 +42,9 @@ Create a Netflix-like website with:
 ### Completed Features
 1. **Homepage** - Hero section with trending content, movie rows
 2. **Movie Detail Page** - Full movie info, cast, similar movies
-3. **Video Player Modal** - Multi-source player with 6 sources:
-   - Kodik (Russian voiceover)
-   - Collaps (Russian voiceover)
-   - VideoCDN (Russian voiceover)
-   - Alloha (Russian voiceover)
-   - VidSrc.pro (International with subtitles)
-   - 2Embed (Subtitles)
+3. **Video Player Modal** - Two sources:
+   - **Collaps** - Русская озвучка (работает в РФ)
+   - **VidSrc** - Запасной без гео-блокировки (субтитры)
 4. **Kinopoisk ID Search** - Auto-search KP ID via unofficial API
 5. **Theme Toggle** - Dark/Light mode
 6. **Watchlist** - Add/remove movies to watchlist
@@ -56,10 +52,9 @@ Create a Netflix-like website with:
 8. **GitHub Pages Deployment** - CI/CD workflow configured
 
 ### Known Limitations (External API Issues)
-1. **Kodik API** sometimes returns incorrect content (different movie/series)
-2. **Collaps** has geo-restrictions (blocked in US region)
-3. **New movies (2025)** may not be available on pirate sources yet
-4. These are external API limitations, not code bugs
+1. **Collaps** has geo-restrictions (blocked outside Russia)
+2. **New movies (2025)** may not be available on sources yet
+3. These are external API limitations, not code bugs
 
 ## Prioritized Backlog
 
@@ -73,8 +68,7 @@ Create a Netflix-like website with:
 
 ### P2 - Medium Priority
 - [ ] Genre filtering
-- [ ] Cleanup unused player components (KinoBDPlayer, UniversalPlayer, etc.)
-- [ ] Improve KP ID search accuracy
+- [ ] Cleanup unused player components
 
 ### P3 - Low Priority / Future
 - [ ] User profiles
