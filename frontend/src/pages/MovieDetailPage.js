@@ -246,10 +246,11 @@ export const MovieDetailPage = () => {
         </motion.div>
       )}
 
-      {/* Simple Player Modal */}
+      {/* Russian Voice Player Modal */}
       {showPlayer && (
-        <SimplePlayer
+        <RussianVoicePlayer
           tmdbId={id}
+          imdbId={details.external_ids?.imdb_id}
           title={details.title || details.name}
           year={new Date(details.release_date || details.first_air_date).getFullYear()}
           mediaType={mediaType}
