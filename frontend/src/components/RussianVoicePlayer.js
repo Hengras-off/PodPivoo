@@ -385,29 +385,55 @@ export const RussianVoicePlayer = ({ tmdbId, imdbId, title, year, mediaType, onC
 
           {/* Info Panel */}
           <div className="mt-4 space-y-3">
-            <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-4">
-              <div className="flex items-start gap-3">
-                <Languages className="w-6 h-6 text-green-400 flex-shrink-0 mt-0.5" />
-                <div className="flex-1 space-y-1">
-                  <p className="font-bold text-green-400 text-sm">
-                    🎙️ ВСЕ ПЛЕЕРЫ С РУССКОЙ ОЗВУЧКОЙ
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    Каждый источник предоставляет профессиональную или любительскую русскую озвучку.
-                    Некоторые плееры имеют несколько вариантов озвучки на выбор внутри плеера.
-                  </p>
+            {kinopoiskId && (
+              <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-4">
+                <div className="flex items-start gap-3">
+                  <Languages className="w-6 h-6 text-green-400 flex-shrink-0 mt-0.5" />
+                  <div className="flex-1 space-y-1">
+                    <p className="font-bold text-green-400 text-sm">
+                      Kinopoisk ID найден: {kinopoiskId}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      Все источники с иконкой 🎬 используют базу русских озвучек.
+                      Выбирайте озвучку внутри плеера если доступно несколько вариантов.
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
+
+            {!kinopoiskId && (
+              <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4">
+                <div className="flex items-start gap-3">
+                  <AlertCircle className="w-6 h-6 text-yellow-400 flex-shrink-0 mt-0.5" />
+                  <div className="flex-1 space-y-1">
+                    <p className="font-bold text-yellow-400 text-sm">
+                      Kinopoisk ID не найден
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      Используются альтернативные источники. Русская озвучка может быть недоступна.
+                    </p>
+                    <button
+                      onClick={findKinopoiskId}
+                      className="mt-2 flex items-center gap-2 px-3 py-1.5 bg-yellow-500/20 hover:bg-yellow-500/30 rounded text-xs font-medium"
+                    >
+                      <RefreshCw className="w-3 h-3" />
+                      Повторить поиск
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
 
             <div className="flex items-center justify-between text-xs text-muted-foreground bg-white/5 rounded-lg p-3">
               <div className="space-y-1">
-                <p>📊 <span className="font-semibold">TMDB:</span> {tmdbId}</p>
-                {imdbId && <p>🎬 <span className="font-semibold">IMDB:</span> {imdbId}</p>}
+                <p>TMDB: <span className="font-semibold">{tmdbId}</span></p>
+                {imdbId && <p>IMDB: <span className="font-semibold">{imdbId}</span></p>}
+                {kinopoiskId && <p>KP: <span className="font-semibold text-green-400">{kinopoiskId}</span></p>}
               </div>
               <div className="text-right space-y-1">
-                <p className="font-semibold text-brand-primary">Тип: {mediaType === 'movie' ? 'Фильм' : 'Сериал'}</p>
-                <p>💡 Если не работает - смените озвучку выше</p>
+                <p className="font-semibold text-brand-primary">{mediaType === 'movie' ? 'Фильм' : 'Сериал'}</p>
+                <p>Если не работает - смените источник</p>
               </div>
             </div>
           </div>
