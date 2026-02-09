@@ -7,7 +7,7 @@ import { getMovieDetails, getTVDetails, getImageUrl, getTrailerUrl } from '../se
 import { useWatchlist } from '../contexts/WatchlistContext';
 import { LoadingSpinner, ErrorMessage } from '../components/LoadingSpinner';
 import { MovieCard } from '../components/MovieCard';
-import { SimplePlayer } from '../components/SimplePlayer';
+import { RussianVoicePlayer } from '../components/RussianVoicePlayer';
 
 export const MovieDetailPage = () => {
   const { mediaType, id } = useParams();
