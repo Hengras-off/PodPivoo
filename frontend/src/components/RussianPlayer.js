@@ -90,8 +90,6 @@ export const RussianPlayer = ({ imdbId, tmdbId, kinopoiskId, title, year, mediaT
         }
         return null;
       },
-        return null;
-      },
       description: 'CDN сеть, высокая скорость',
       icon: '⚡',
       quality: 'HD'
@@ -101,6 +99,8 @@ export const RussianPlayer = ({ imdbId, tmdbId, kinopoiskId, title, year, mediaT
       getUrl: () => {
         if (kinopoiskId) {
           return `https://filmix.ac/play/${kinopoiskId}`;
+        } else if (imdbId) {
+          return `https://filmix.ac/embed/${imdbId}`;
         }
         return null;
       },
@@ -111,10 +111,11 @@ export const RussianPlayer = ({ imdbId, tmdbId, kinopoiskId, title, year, mediaT
     {
       name: 'Alloha',
       getUrl: () => {
-        if (kinopoiskId) {
-          return `https://alloha.tv/?kp=${kinopoiskId}`;
-        } else if (imdbId) {
+        if (imdbId) {
+          // Alloha лучше работает с IMDB
           return `https://alloha.tv/?imdb=${imdbId}`;
+        } else if (kinopoiskId) {
+          return `https://alloha.tv/?kp=${kinopoiskId}`;
         }
         return null;
       },
@@ -127,6 +128,8 @@ export const RussianPlayer = ({ imdbId, tmdbId, kinopoiskId, title, year, mediaT
       getUrl: () => {
         if (kinopoiskId) {
           return `https://zetflix.zone/embed/${kinopoiskId}`;
+        } else if (imdbId) {
+          return `https://zetflix.zone/embed/imdb/${imdbId}`;
         }
         return null;
       },
